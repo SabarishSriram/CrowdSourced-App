@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Change if using MySQL
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id      String    @id @default(uuid())
+  name    String
+  email   String    @unique
+  phone   String    @unique
+  reports Report[]
+  Account Account?
+  Session Session[]
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String  @unique
+  type              String
+  provider          String 
+  providerAccountId String  @unique
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  id         String   @id @default(uuid())
+  identifier String   @unique
+  token      String   @unique
+  expires    DateTime
+}
+
+model Report {
+  id                  String   @id @default(uuid())
+  description         String
+  reportDate          DateTime @default(now())
+  userId              String
+  locationId          String
+  complaintCategoryId String
+  statusId            String
+
+  user              User              @relation(fields: [userId], references: [id])
+  location          Location          @relation(fields: [locationId], references: [id])
+  complaintCategory ComplaintCategory @relation(fields: [complaintCategoryId], references: [id])
+  status            Status            @relation(fields: [statusId], references: [id])
+  updates           Update[]
+  ticket            Ticket?
+}
+
+model Location {
+  id        String   @id @default(uuid())
+  address   String
+  latitude  Float
+  longitude Float
+  reports   Report[]
+}
+
+model ComplaintCategory {
+  id      String   @id @default(uuid())
+  name    String
+  reports Report[]
+}
+
+model Status {
+  id      String   @id @default(uuid())
+  name    String
+  reports Report[]
+}
+
+model Update {
+  id          String   @id @default(uuid())
+  reportId    String
+  description String
+  updateDate  DateTime @default(now())
+
+  report Report @relation(fields: [reportId], references: [id])
+}
+
+model Ticket {
+  id           String  @id @default(uuid())
+  reportId     String  @unique
+  authorityId  String
+  resolutionId String? @unique
+
+  report     Report      @relation(fields: [reportId], references: [id])
+  authority  Authority   @relation(fields: [authorityId], references: [id])
+  resolution Resolution? @relation(fields: [resolutionId], references: [id])
+  feedbacks  Feedback[]
+}
+
+model Authority {
+  id           String @id @default(uuid())
+  name         String
+  departmentId String
+
+  department Department @relation(fields: [departmentId], references: [id])
+  tickets    Ticket[]
+}
+
+model Department {
+  id          String      @id @default(uuid())
+  name        String
+  authorities Authority[]
+}
+
+model Resolution {
+  id             String   @id @default(uuid())
+  details        String
+  resolutionDate DateTime @default(now())
+
+  ticket Ticket?
+}
+
+model Feedback {
+  id           String   @id @default(uuid())
+  ticketId     String
+  text         String
+  feedbackDate DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+}
+
+model Notification {
+  id               String   @id @default(uuid())
+  adminId          String
+  text             String
+  notificationDate DateTime @default(now())
+
+  admin Admin @relation(fields: [adminId], references: [id])
+}
+
+model Admin {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  notifications Notification[]
+}
