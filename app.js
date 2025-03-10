@@ -159,15 +159,6 @@ async function main() {
   });
 
   // Step 4: Insert Report data
-  await prisma.report.createMany({
-    data: [
-      { description: 'Streetlight broken', reportDate: new Date(), userId: userIds[0].id, locationId: locationIds[0].id, complaintCategoryId: complaintCategoryIds[0].id, statusId: statusIds[0].id },
-      { description: 'Pothole on road', reportDate: new Date(), userId: userIds[1].id, locationId: locationIds[1].id, complaintCategoryId: complaintCategoryIds[1].id, statusId: statusIds[1].id },
-      { description: 'Sewage leakage', reportDate: new Date(), userId: userIds[2].id, locationId: locationIds[2].id, complaintCategoryId: complaintCategoryIds[2].id, statusId: statusIds[2].id },
-      { description: 'Streetlight flickering', reportDate: new Date(), userId: userIds[3].id, locationId: locationIds[3].id, complaintCategoryId: complaintCategoryIds[3].id, statusId: statusIds[3].id },
-      { description: 'Road damaged', reportDate: new Date(), userId: userIds[4].id, locationId: locationIds[4].id, complaintCategoryId: complaintCategoryIds[4].id, statusId: statusIds[4].id },
-    ],
-  });
 
   // Step 5: Insert other related data (Location, ComplaintCategory, Status, etc.)
 
